@@ -1,0 +1,36 @@
+# Binaires
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+hexawx
+plugins/*
+!plugins/.gitkeep
+examples
+
+# Base de données (pour ne pas versionner tes tests locaux)
+*.db
+*.db-journal
+
+# Configurations locales
+.env
+config.yaml
+config.yml
+
+# Dépendances
+vendor/
+node_modules/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+coverage.out
+
+# Old files
+*.bak
