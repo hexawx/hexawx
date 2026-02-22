@@ -1,12 +1,22 @@
 package core
 
-import "time"
+import (
+	"time"
+
+	"github.com/hashicorp/go-plugin"
+)
 
 // La donnée météo universelle pour HexaWX
 type WeatherRecord struct {
 	Timestamp   time.Time
 	Temperature float64
 	Humidity    float64
+}
+
+var Handshake = plugin.HandshakeConfig{
+	ProtocolVersion:  1,
+	MagicCookieKey:   "GOWX_PLUGIN",
+	MagicCookieValue: "hello",
 }
 
 // L'interface qu'un plugin "Driver" doit implémenter

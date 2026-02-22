@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 
@@ -34,19 +33,12 @@ var startCmd = &cobra.Command{
 			}
 
 			path := filepath.Join("./plugins", f.Name())
-			var err error
 
-			// Convention simple : si le nom contient "exporter", c'est un exporter, sinon c'est un driver
-			if strings.Contains(f.Name(), "exporter") {
-				fmt.Printf("📦 Chargement Exporter : %s\n", f.Name())
-				err = manager.LoadPlugin(path, "exporter")
-			} else {
-				fmt.Printf("🔌 Chargement Driver   : %s\n", f.Name())
-				err = manager.LoadPlugin(path, "driver")
-			}
+			// On ne précise plus le type, on laisse le manager se débrouiller
+			err := manager.AutoLoad(path, AppConfig.Plugins[f.Name()])
 
 			if err != nil {
-				fmt.Printf("❌ Erreur sur %s : %v\n", f.Name(), err)
+				fmt.Printf("❌ %s : %v\n", f.Name(), err)
 			}
 		}
 

@@ -8,6 +8,16 @@ import (
 
 type ExporterRPCClient struct{ client *rpc.Client }
 
+func (m *ExporterRPCClient) Init(config map[string]string) error {
+	var resp error
+	// On appelle "Plugin.Init" sur le binaire distant
+	err := m.client.Call("Plugin.Init", config, &resp)
+	if err != nil {
+		return err
+	}
+	return resp
+}
+
 func (g *ExporterRPCClient) Export(record WeatherRecord) error {
 	var resp struct{}
 	err := g.client.Call("Plugin.Export", record, &resp)
@@ -15,6 +25,11 @@ func (g *ExporterRPCClient) Export(record WeatherRecord) error {
 }
 
 type ExporterRPCServer struct{ Impl Exporter }
+
+func (s *ExporterRPCServer) Init(config map[string]string, resp *error) error {
+	*resp = s.Impl.Init(config)
+	return nil
+}
 
 func (s *ExporterRPCServer) Export(record WeatherRecord, resp *struct{}) error {
 	return s.Impl.Export(record)

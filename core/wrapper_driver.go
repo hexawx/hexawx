@@ -9,6 +9,11 @@ import (
 // 1. Le Client RPC : Comment le Serveur appelle le Plugin
 type DriverRPCClient struct{ client *rpc.Client }
 
+func (g *DriverRPCClient) Init(config map[string]string) error {
+	var resp struct{}
+	return g.client.Call("Plugin.Init", config, &resp)
+}
+
 func (g *DriverRPCClient) Fetch() (WeatherRecord, error) {
 	var resp WeatherRecord
 	err := g.client.Call("Plugin.Fetch", new(interface{}), &resp)
@@ -17,6 +22,11 @@ func (g *DriverRPCClient) Fetch() (WeatherRecord, error) {
 
 // 2. Le Serveur RPC : Comment le Plugin répond au Serveur
 type DriverRPCServer struct{ Impl Driver }
+
+func (s *DriverRPCServer) Init(config map[string]string, resp *error) error {
+	*resp = s.Impl.Init(config)
+	return nil
+}
 
 func (s *DriverRPCServer) Fetch(args interface{}, resp *WeatherRecord) error {
 	data, err := s.Impl.Fetch()
