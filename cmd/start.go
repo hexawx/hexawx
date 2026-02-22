@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"hexawx/core"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -10,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/HexaWX/HexaWX/core"
 	"github.com/spf13/cobra"
 )
 

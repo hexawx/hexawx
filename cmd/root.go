@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"hexawx/core"
 	"os"
 
+	"github.com/HexaWX/HexaWX/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
