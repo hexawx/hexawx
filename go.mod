@@ -1,4 +1,4 @@
-module github.com/HexaWX/HexaWX
+module github.com/hexawx/hexawx
 
 go 1.25.6
 
