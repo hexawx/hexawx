@@ -1,0 +1,30 @@
+name: HexaWX CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25'
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Verify Formatting
+      run: if [ "$(gofmt -l . | wc -l)" -gt 0 ]; then exit 1; fi
+
+    - name: Build Core
+      run: go build -v -o hexawx ./cmd/server/main.go
+
+    - name: Test
+      run: go test -v ./...
