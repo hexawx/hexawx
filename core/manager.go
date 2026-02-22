@@ -37,72 +37,49 @@ func (m *PluginManager) AutoLoad(path string, config map[string]string) error {
 			"driver":   &DriverPlugin{},
 			"exporter": &ExporterPlugin{},
 		},
-		Cmd: exec.Command(path),
+		Cmd:        exec.Command(path),
+		SyncStdout: os.Stdout,
+		SyncStderr: os.Stderr,
 	})
 
 	rpcClient, err := client.Client()
 	if err != nil {
-		return err
+		return fmt.Errorf("erreur client RPC: %w", err)
 	}
 
-	// 1. On tente de le récupérer comme un Driver
+	// On utilise une variable pour suivre si on a réussi à charger quelque chose
+	var loaded bool
+
+	// 1. On tente Driver
 	rawDriver, err := rpcClient.Dispense("driver")
 	if err == nil && rawDriver != nil {
-		d := rawDriver.(Driver)
-		d.Init(config)
-		m.drivers = append(m.drivers, d)
+		if d, ok := rawDriver.(Driver); ok {
+			d.Init(config)
+			m.drivers = append(m.drivers, d)
+			loaded = true
+		}
+	}
+
+	// 2. On tente Exporter seulement si Driver a échoué
+	if !loaded {
+		rawExporter, err := rpcClient.Dispense("exporter")
+		if err == nil && rawExporter != nil {
+			if e, ok := rawExporter.(Exporter); ok {
+				e.Init(config)
+				m.exporters = append(m.exporters, e)
+				loaded = true
+			}
+		}
+	}
+
+	if loaded {
 		m.clients = append(m.clients, client)
-		fmt.Printf("🔌 Driver détecté et chargé : %s\n", path)
 		return nil
 	}
 
-	// 2. Sinon, on tente comme un Exporter
-	rawExporter, err := rpcClient.Dispense("exporter")
-	if err == nil && rawExporter != nil {
-		e := rawExporter.(Exporter)
-		e.Init(config)
-		m.exporters = append(m.exporters, e)
-		m.clients = append(m.clients, client)
-		fmt.Printf("📦 Exporter détecté et chargé : %s\n", path)
-		return nil
-	}
-
+	// Si on arrive ici, rien n'a marché
 	client.Kill()
-	return fmt.Errorf("type de plugin inconnu")
-}
-
-// LoadPlugin lance un binaire et l'ajoute à la liste des drivers actifs
-func (m *PluginManager) LoadPlugin(path string, pluginType string) error {
-	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig: Handshake,
-		Plugins: map[string]plugin.Plugin{
-			"driver":   &DriverPlugin{},
-			"exporter": &ExporterPlugin{},
-		},
-		Cmd:        exec.Command(path),
-		Managed:    true,
-		SyncStdout: os.Stdout, // Redirige le fmt.Print du plugin vers ta console
-		SyncStderr: os.Stderr, // Redirige les erreurs vers ta console
-	})
-
-	rpcClient, err := client.Client()
-	if err != nil {
-		return err
-	}
-
-	raw, err := rpcClient.Dispense(pluginType)
-	if err != nil {
-		return err
-	}
-
-	if pluginType == "driver" {
-		m.drivers = append(m.drivers, raw.(Driver))
-	} else {
-		m.exporters = append(m.exporters, raw.(Exporter))
-	}
-
-	m.clients = append(m.clients, client)
-	return nil
+	return fmt.Errorf("le plugin à l'adresse %s n'a pu être chargé ni comme driver ni comme exporter", path)
 }
 
 func (m *PluginManager) StopAll() {

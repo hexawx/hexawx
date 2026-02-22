@@ -6,9 +6,7 @@ bin/
 *.so
 *.dylib
 hexawx
-plugins/*
-!plugins/.gitkeep
-examples
+plugins
 
 # Base de données (pour ne pas versionner tes tests locaux)
 *.db
@@ -16,8 +14,8 @@ examples
 
 # Configurations locales
 .env
-config.yaml
-config.yml
+config*.yaml
+config*.yml
 
 # Dépendances
 vendor/

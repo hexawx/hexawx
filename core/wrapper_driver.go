@@ -16,7 +16,7 @@ func (g *DriverRPCClient) Init(config map[string]string) error {
 
 func (g *DriverRPCClient) Fetch() (WeatherRecord, error) {
 	var resp WeatherRecord
-	err := g.client.Call("Plugin.Fetch", new(interface{}), &resp)
+	err := g.client.Call("Plugin.Fetch", struct{}{}, &resp)
 	return resp, err
 }
 
@@ -28,7 +28,7 @@ func (s *DriverRPCServer) Init(config map[string]string, resp *error) error {
 	return nil
 }
 
-func (s *DriverRPCServer) Fetch(args interface{}, resp *WeatherRecord) error {
+func (s *DriverRPCServer) Fetch(args struct{}, resp *WeatherRecord) error {
 	data, err := s.Impl.Fetch()
 	*resp = data
 	return err

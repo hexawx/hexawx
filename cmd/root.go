@@ -14,7 +14,7 @@ var AppConfig core.Config
 
 var rootCmd = &cobra.Command{
 	Use:   "hexawx",
-	Short: "HexaWX - Un orchestrateur météo modulaire",
+	Short: "HexaWX - Station météo modulaire",
 	Long:  `HexaWX est un serveur de station météo basé sur une architecture hexagonale et des plugins.`,
 }
 
@@ -34,9 +34,7 @@ func initConfig() {
 	viper.SetDefault("server.interval", "5s")
 	viper.SetDefault("server.plugin_dir", "./plugins")
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("📖 Fichier de configuration utilisé :", viper.ConfigFileUsed())
-	}
+	viper.ReadInConfig()
 
 	if err := viper.Unmarshal(&AppConfig); err != nil {
 		fmt.Printf("Erreur décodage config: %v\n", err)
