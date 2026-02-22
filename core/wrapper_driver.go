@@ -23,15 +23,17 @@ func (g *DriverRPCClient) Fetch() (WeatherRecord, error) {
 // 2. Le Serveur RPC : Comment le Plugin répond au Serveur
 type DriverRPCServer struct{ Impl Driver }
 
-func (s *DriverRPCServer) Init(config map[string]string, resp *error) error {
-	*resp = s.Impl.Init(config)
-	return nil
+func (s *DriverRPCServer) Init(config map[string]string, resp *struct{}) error {
+	return s.Impl.Init(config)
 }
 
 func (s *DriverRPCServer) Fetch(args struct{}, resp *WeatherRecord) error {
-	data, err := s.Impl.Fetch()
-	*resp = data
-	return err
+	record, err := s.Impl.Fetch()
+	if err != nil {
+		return err
+	}
+	*resp = record
+	return nil
 }
 
 // 3. L'implémentation de go-plugin

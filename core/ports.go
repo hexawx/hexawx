@@ -15,7 +15,7 @@ type WeatherRecord struct {
 
 var Handshake = plugin.HandshakeConfig{
 	ProtocolVersion:  1,
-	MagicCookieKey:   "HEXAWX_PLUGIN",
+	MagicCookieKey:   "GOWX_PLUGIN",
 	MagicCookieValue: "hello",
 }
 

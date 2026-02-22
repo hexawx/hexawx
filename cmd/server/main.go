@@ -1,6 +1,6 @@
 package main
 
-import "github.com/HexaWX/HexaWX/cmd"
+import "github.com/hexawx/hexawx/cmd"
 
 func main() {
 	cmd.Execute()

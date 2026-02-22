@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/HexaWX/HexaWX/core"
+	"github.com/hexawx/hexawx/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

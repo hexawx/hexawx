@@ -38,6 +38,7 @@ func (m *PluginManager) AutoLoad(path string, config map[string]string) error {
 			"exporter": &ExporterPlugin{},
 		},
 		Cmd:        exec.Command(path),
+		Managed:    true,
 		SyncStdout: os.Stdout,
 		SyncStderr: os.Stderr,
 	})
@@ -79,7 +80,7 @@ func (m *PluginManager) AutoLoad(path string, config map[string]string) error {
 
 	// Si on arrive ici, rien n'a marché
 	client.Kill()
-	return fmt.Errorf("le plugin à l'adresse %s n'a pu être chargé ni comme driver ni comme exporter", path)
+	return fmt.Errorf("Le plugin à l'adresse %s n'a pu être chargé ni comme driver ni comme exporter", path)
 }
 
 func (m *PluginManager) StopAll() {

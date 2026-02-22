@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/HexaWX/HexaWX/core"
+	"github.com/hexawx/hexawx/core"
 	"github.com/spf13/cobra"
 )
 

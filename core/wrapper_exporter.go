@@ -26,9 +26,8 @@ func (g *ExporterRPCClient) Export(record WeatherRecord) error {
 
 type ExporterRPCServer struct{ Impl Exporter }
 
-func (s *ExporterRPCServer) Init(config map[string]string, resp *error) error {
-	*resp = s.Impl.Init(config)
-	return nil
+func (s *ExporterRPCServer) Init(config map[string]string, resp *struct{}) error {
+	return s.Impl.Init(config)
 }
 
 func (s *ExporterRPCServer) Export(record WeatherRecord, resp *struct{}) error {
