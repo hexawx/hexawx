@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var pluginsListCmd = &cobra.Command{
+var pluginsInfoCmd = &cobra.Command{
 	Use:   "info [plugin-name]",
 	Short: "Affiche les information d'un plugin",
 	Args:  cobra.ExactArgs(1),
@@ -16,5 +16,5 @@ var pluginsListCmd = &cobra.Command{
 }
 
 func init() {
-	pluginsCmd.AddCommand(pluginsListCmd)
+	pluginsCmd.AddCommand(pluginsInfoCmd)
 }

@@ -22,6 +22,7 @@ var Handshake = plugin.HandshakeConfig{
 // L'interface qu'un plugin "Driver" doit implémenter
 // Driver est le port d'entrée (Infrastructure -> Core)
 type Driver interface {
+	Name() (string, error)
 	Init(config map[string]string) error
 	Fetch() (WeatherRecord, error)
 }
@@ -29,6 +30,7 @@ type Driver interface {
 // L'interface qu'un plugin "Exporter" doit implémenter
 // Exporter est le port de sortie (Core -> Infrastructure)
 type Exporter interface {
+	Name() (string, error)
 	Init(config map[string]string) error
 	Export(record WeatherRecord) error
 }

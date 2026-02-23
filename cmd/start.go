@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
@@ -19,28 +18,16 @@ var startCmd = &cobra.Command{
 		manager := core.NewPluginManager()
 
 		interval := AppConfig.Server.Interval
-		pluginDir := AppConfig.Server.PluginDir
+
+		go func() {
+			manager.StartAdminShell(AppConfig)
+		}()
 
 		// 1. Détection et Chargement dynamique
 		fmt.Println("🔍 Chargement des plugins...")
 
 		// On scanne le dossier ./plugins
-		files, _ := os.ReadDir(pluginDir)
-
-		for _, f := range files {
-			if f.IsDir() {
-				continue
-			}
-
-			path := filepath.Join("./plugins", f.Name())
-
-			// On ne précise plus le type, on laisse le manager se débrouiller
-			err := manager.AutoLoad(path, AppConfig.Plugins[f.Name()])
-
-			if err != nil {
-				fmt.Printf("❌ %s : %v\n", f.Name(), err)
-			}
-		}
+		manager.AutoLoad(AppConfig)
 
 		// 2. Nettoyage à l'arrêt
 		c := make(chan os.Signal, 1)

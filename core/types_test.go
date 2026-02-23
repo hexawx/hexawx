@@ -16,4 +16,12 @@ func TestWeatherRecord(t *testing.T) {
 	if record.Temperature != 25.5 {
 		t.Errorf("Attendu 25.5, obtenu %f", record.Temperature)
 	}
+
+	if record.Humidity != 60.0 {
+		t.Errorf("Attendu 60.0, obtenu %f", record.Humidity)
+	}
+
+	if record.Timestamp != now {
+		t.Errorf("Attendu %v, obtenu %v", now, record.Timestamp)
+	}
 }

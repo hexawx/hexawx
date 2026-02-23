@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var pluginsInfoCmd = &cobra.Command{
+var pluginsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Liste les plugins depuis le registry officiel",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -35,5 +35,5 @@ var pluginsInfoCmd = &cobra.Command{
 }
 
 func init() {
-	pluginsCmd.AddCommand(pluginsInfoCmd)
+	pluginsCmd.AddCommand(pluginsListCmd)
 }

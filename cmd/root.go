@@ -33,6 +33,7 @@ func initConfig() {
 
 	viper.SetDefault("server.interval", "5s")
 	viper.SetDefault("server.plugin_dir", "./plugins")
+	viper.SetDefault("server.ssh_port", 2233)
 
 	viper.ReadInConfig()
 
