@@ -54,7 +54,7 @@ var pluginsInstallCmd = &cobra.Command{
 
 		// 4. Préparer l'URL et le chemin
 		binaryURL := resolveURL(target.BinaryURL, target.Version)
-		destPath := filepath.Join("plugins", target.Name)
+		destPath := filepath.Join(AppConfig.Server.PluginDir, target.Name)
 		if runtime.GOOS == "windows" {
 			destPath += ".exe"
 		}

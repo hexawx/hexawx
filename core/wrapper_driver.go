@@ -14,6 +14,12 @@ func (g *DriverRPCClient) Init(config map[string]string) error {
 	return g.client.Call("Plugin.Init", config, &resp)
 }
 
+func (g *DriverRPCClient) Name() (string, error) {
+	var resp string
+	err := g.client.Call("Plugin.Name", struct{}{}, &resp)
+	return resp, err
+}
+
 func (g *DriverRPCClient) Fetch() (WeatherRecord, error) {
 	var resp WeatherRecord
 	err := g.client.Call("Plugin.Fetch", struct{}{}, &resp)
@@ -25,6 +31,15 @@ type DriverRPCServer struct{ Impl Driver }
 
 func (s *DriverRPCServer) Init(config map[string]string, resp *struct{}) error {
 	return s.Impl.Init(config)
+}
+
+func (s *DriverRPCServer) Name(args struct{}, resp *string) error {
+	name, err := s.Impl.Name()
+	if err != nil {
+		return err
+	}
+	*resp = name
+	return nil
 }
 
 func (s *DriverRPCServer) Fetch(args struct{}, resp *WeatherRecord) error {
