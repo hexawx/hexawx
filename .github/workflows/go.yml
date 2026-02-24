@@ -3,31 +3,22 @@ name: Go CI
 on:
   push:
     branches: [ main ]
-    tags:
-      - 'v*'
-  pull_request:
-    branches: [ main ]
+    tags: [ 'v*' ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.25'
-
-      - name: Build
-        run: go build -v ./...
-
+          go-version: '1.24' # 1.25 n'est pas encore stable en fév 2026
       - name: Run Tests
         run: go test -v ./core/...
 
-  release:
+  build:
     needs: test
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,37 +28,42 @@ jobs:
           - os: darwin
             arch: arm64
           - os: linux
-            arch: arm64   # Pour Raspberry Pi 4/5, serveurs Cloud ARM
+            arch: arm64
           - os: linux
-            arch: arm     # Pour les anciens Raspberry Pi / IoT
+            arch: arm
           - os: windows
             arch: amd64
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build HexaWX
-        env:
-          GOOS: ${{ matrix.os }}
-          GOARCH: ${{ matrix.arch }}
+      - name: Build
         run: |
+          mkdir -p dist
           BINARY_NAME=hexawx_${{ matrix.os }}_${{ matrix.arch }}
           if [ "${{ matrix.os }}" = "windows" ]; then BINARY_NAME+=".exe"; fi
-          go build -v -o dist/$BINARY_NAME ./cmd/server/main.go
-
-      - name: Upload Artifacts
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -v -o dist/$BINARY_NAME ./cmd/server/main.go
+      
+      - name: Temporary Save
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.os }}-${{ matrix.arch }}
-          path: hexawx_*
+          name: bin-${{ matrix.os }}-${{ matrix.arch }}
+          path: dist/*
+
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: all-binaries
+          merge-multiple: true # Très important : met tout dans le même dossier
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            dist/hexawx_linux_amd64
-            dist/hexawx_linux_arm64
-            dist/hexawx_linux_arm
-            dist/hexawx_darwin_arm64
-            dist/hexawx_windows_amd64.exe
+          files: all-binaries/*
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true # GitHub générera le changelog pour toi !
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
