@@ -10,7 +10,7 @@ import (
 )
 
 var cfgFile string
-var AppConfig core.Config
+var AppConfig *core.Config
 
 var rootCmd = &cobra.Command{
 	Use:   "hexawx",
@@ -40,6 +40,8 @@ func initConfig() {
 	if err := viper.Unmarshal(&AppConfig); err != nil {
 		fmt.Printf("Erreur décodage config: %v\n", err)
 	}
+
+	AppConfig.Server.Version = "1.0.0"
 }
 
 func Execute() {

@@ -16,6 +16,7 @@ var startCmd = &cobra.Command{
 	Short: "Lance l'orchestrateur météo",
 	Run: func(cmd *cobra.Command, args []string) {
 		manager := core.NewPluginManager()
+		manager.StartTime = time.Now()
 
 		interval := AppConfig.Server.Interval
 
@@ -35,27 +36,38 @@ var startCmd = &cobra.Command{
 
 		go func() {
 			<-c
-			fmt.Println("\nTerminaison propre de HexaWX...")
+			fmt.Println("\nFermeture propre de HexaWX...")
 			manager.StopAll()
+			time.Sleep(500 * time.Millisecond)
 			os.Exit(0)
 		}()
 
 		// 3. Boucle de monitoring
 		ticker := time.NewTicker(interval)
-		fmt.Printf("📡 HexaWX est à l'écoute (Intervalle: %v) (Ctrl+C pour arrêter)\n", interval)
+		fmt.Printf("\n📡 HexaWX est à l'écoute (Intervalle: %v) (Ctrl+C pour arrêter)\n\n", interval)
 
 		for range ticker.C {
-			for _, driver := range manager.Drivers() {
-				data, err := driver.Fetch()
+			for _, pluginDriver := range manager.Plugins() {
+				if pluginDriver.Driver() == nil || pluginDriver.Status() != core.Status.Running {
+					continue
+				}
+
+				data, err := pluginDriver.Driver().Fetch()
 				if err != nil {
 					fmt.Printf("Erreur Fetch: %v\n", err)
 					continue
 				}
-				for _, exporter := range manager.Exporters() {
-					err := exporter.Export(data)
-					if err != nil {
-						fmt.Printf("⚠️ Erreur Export vers un plugin : %v\n", err)
+
+				for _, pluginExporter := range manager.Plugins() {
+					if pluginExporter.Exporter() == nil || pluginExporter.Status() != core.Status.Running {
+						continue
 					}
+
+					err := pluginExporter.Exporter().Export(data)
+					if err != nil {
+						fmt.Printf(core.Prefix.Warning+" Erreur Export vers un plugin : %v\n", err)
+					}
+
 				}
 			}
 		}

@@ -7,6 +7,7 @@ type Config struct {
 		Interval  time.Duration `mapstructure:"interval"`
 		PluginDir string        `mapstructure:"plugin_dir"`
 		SshPort   int           `mapstructure:"ssh_port"`
+		Version   string
 	} `mapstructure:"server"`
 	Plugins map[string]map[string]string `mapstructure:"plugins"`
 }
