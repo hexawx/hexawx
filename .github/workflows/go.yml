@@ -53,7 +53,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Autorise la création de releases et l'upload d'assets
+      contents: write     # Autorise la création de releases et l'upload d'assets
+      id-token: write     # Pour l'authentification sécurisée
       pull-requests: read # Optionnel, mais aide à générer les release notes
     steps:
       - name: Download all binaries
