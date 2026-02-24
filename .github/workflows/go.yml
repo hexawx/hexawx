@@ -59,3 +59,15 @@ jobs:
         with:
           name: binaries-${{ matrix.os }}-${{ matrix.arch }}
           path: hexawx_*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/hexawx_linux_amd64
+            dist/hexawx_linux_arm64
+            dist/hexawx_linux_arm
+            dist/hexawx_darwin_arm64
+            dist/hexawx_windows_amd64.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
