@@ -52,7 +52,7 @@ jobs:
         run: |
           BINARY_NAME=hexawx_${{ matrix.os }}_${{ matrix.arch }}
           if [ "${{ matrix.os }}" = "windows" ]; then BINARY_NAME+=".exe"; fi
-          go build -v -o $BINARY_NAME .
+          go build -v -o $BINARY_NAME ./cmd/server/main.go
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
